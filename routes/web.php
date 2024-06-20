@@ -17,7 +17,7 @@ use App\Http\Controllers\ItemController;
 |
 */
 
-Route::get('/', [PedidoController::class, 'index'])->name('home');
+Route::get('/', [PedidoController::class, 'showe'])->name('welcome');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -39,3 +39,11 @@ require __DIR__.'/auth.php';
 
 Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedidos.store');
 Route::resource('items', ItemController::class);
+
+// web.php
+Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
+Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedidos.store');
+Route::get('/pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
+Route::get('/pedidos/{pedido}/edit', [PedidoController::class, 'edit'])->name('pedidos.edit_pedido');
+Route::put('/pedidos/{pedido}', [PedidoController::class, 'update'])->name('pedidos.update');
+Route::delete('/pedidos/{pedido}', [PedidoController::class, 'destroy'])->name('pedidos.destroy');
