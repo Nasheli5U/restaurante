@@ -12,12 +12,12 @@
 
     @vite('resources/css/app.css')
 </head>
-<body class="antialiased">
+<body class="antialiased bg-white">
     <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
         @if (Route::has('login'))
             <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
                 @auth
-                    <a href="{{ url('/dashboard') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Dashboard</a>
+                    <a href="{{ url('/dashboard') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Modificar items</a>
                 @else
                     <a href="{{ route('login') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Modificar items</a>
 
@@ -25,12 +25,8 @@
                         <a href="{{ route('register') }}" class="ml-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Registrarse</a>
                     @endif
                 @endauth
-
             </div>
         @endif
-
-
-        <a href="{{ route('pedidos.index') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Ver pedidos</a>
 
         <!-- Contenido Principal -->
         <div class="container mx-auto p-4">
@@ -62,7 +58,7 @@
                         </div>
                     </form>
 
-                    <h1 class="text-3xl font-bold mb-4">Items</h1>
+                    <h1 class="text-3xl font-bold mb-4 dark:text-white">Items</h1>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($items as $item)
                             @if(request('category') == '' || $item->categoria == request('category'))
@@ -88,9 +84,10 @@
                             <!-- Los ítems seleccionados se añadirán aquí -->
                         </ul>
                     </div>
-                    <div class="flex space-x-2 mt-4">
-                        <button id="create-order-btn" class="px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" disabled>Generar Pedido</button>
-                        <button id="clear-selection-btn" class="px-4 py-2 text-sm font-medium text-center text-white bg-gray-700 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">Limpiar</button>
+                    <div class="mt-4">
+                        <button id="create-order-btn" class="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mb-2" disabled>Generar Pedido</button>
+                        <button id="clear-selection-btn" class="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-gray-700 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 mb-2">Limpiar</button>
+                        <a href="{{ route('pedidos.index') }}" class="block w-full px-4 py-2 text-sm font-semibold text-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Ver pedidos</a>
                     </div>
                 </div>
             </div>
@@ -135,9 +132,9 @@
                             <p class="text-sm text-gray-500 truncate dark:text-gray-400">${item.precio}</p>
                         </div>
                         <div class="flex items-center">
-                            <button class="quantity-decrease-btn bg-gray-200 text-gray-700 px-2 py-1 rounded">-</button>
-                            <span class="mx-2">${item.cantidad}</span>
-                            <button class="quantity-increase-btn bg-gray-200 text-gray-700 px-2 py-1 rounded">+</button>
+                            <button class="quantity-decrease-btn bg-gray-200 text-white-700 px-2 py-1 rounded">-</button>
+                            <span class="mx-2 text-white">${item.cantidad}</span>
+                            <button class="quantity-increase-btn bg-gray-200 text-white-700 px-2 py-1 rounded">+</button>
                         </div>
                     `;
                     li.querySelector('.quantity-decrease-btn').addEventListener('click', () => updateQuantity(item.id, -1));
@@ -158,29 +155,45 @@
                 }
             }
 
+            // Dentro de la sección <script> en welcome.blade.php
+
+           
+            // Dentro de la sección <script> en welcome.blade.php
+
             createOrderBtn.addEventListener('click', function() {
                 const tableNumber = prompt('Ingrese el número de mesa:');
                 if (tableNumber && selectedItems.length > 0) {
+                    const itemsWithQuantities = selectedItems.map(item => ({
+                        id: item.id,
+                        cantidad: item.cantidad // Usamos la cantidad seleccionada del usuario
+                    }));
+
                     fetch('{{ route("pedidos.store") }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        body: JSON.stringify({ mesa: tableNumber, items: selectedItems })
+                        body: JSON.stringify({ mesa: tableNumber, items: itemsWithQuantities })
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.message) {
                             alert(data.message);
                             clearSelection();
-                            fetchItems();
+                            fetchItems(); // Actualiza la lista de ítems después de crear el pedido
                         }
+                    })
+                    .catch(error => {
+                        console.error('Error al crear el pedido:', error);
+                        alert('Ocurrió un error al crear el pedido. Por favor, intenta nuevamente.');
                     });
                 } else {
                     alert('Por favor, ingrese un número de mesa válido y seleccione al menos un ítem.');
                 }
             });
+
+
 
             clearSelectionBtn.addEventListener('click', clearSelection);
 

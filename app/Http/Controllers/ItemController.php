@@ -51,4 +51,17 @@ class ItemController extends Controller
         $item->delete();
         return response()->json(null, 204);
     }
+
+    public function updateDisponibilidad($id, Request $request)
+    {
+        $item = Item::find($id);
+        if ($item) {
+            $item->disponibilidad = $request->input('disponibilidad');
+            $item->save();
+            return response()->json(['success' => true, 'message' => 'Disponibilidad actualizada correctamente']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Ítem no encontrado'], 404);
+    }
+
 }

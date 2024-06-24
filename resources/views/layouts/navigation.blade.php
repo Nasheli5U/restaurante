@@ -20,6 +20,9 @@
                     <x-nav-link :href="route('items.create')" :active="request()->routeIs('items.create')">
                         {{ __('Añadir Ítem') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('pedidos.index')" :active="request()->routeIs('pedidos.index')">
+                        {{ __('Ver pedidos') }}
+                    </x-nav-link>
                 </div>
             </div>
 
